@@ -1,0 +1,10 @@
+^C:\E\_VSCODE_PROJECTS\CPPLOX\BUILD\CMAKEFILES\191619D08990E567D390A44F3A64E04B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/E/_VSCode_Projects/CPPLox -BC:/E/_VSCode_Projects/CPPLox/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/E/_VSCode_Projects/CPPLox/build/CPPLox.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

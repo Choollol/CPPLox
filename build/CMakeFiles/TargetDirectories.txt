@@ -1,0 +1,8 @@
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/Experimental.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/Nightly.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/Continuous.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/CPPLox.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/RUN_TESTS.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/ALL_BUILD.dir
+C:/E/_VSCode_Projects/CPPLox/build/CMakeFiles/ZERO_CHECK.dir
