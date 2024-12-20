@@ -10,6 +10,9 @@
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Interpreter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

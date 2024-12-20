@@ -8,6 +8,19 @@
 #include "Token.hpp"
 
 extern bool hadError;
+extern bool hadRuntimeError;
+
+class ParseError : public std::runtime_error {
+   public:
+    using std::runtime_error::runtime_error;
+};
+
+class RuntimeError : public std::runtime_error {
+   public:
+    RuntimeError(const Token& tok, const std::string& msg) : std::runtime_error(msg), token(tok) {}
+
+    Token token;
+};
 
 /**
  * @brief Helper function to report errors.
@@ -41,9 +54,12 @@ inline void error(const Token& token, std::string_view message) {
     }
 }
 
-class ParseError : public std::runtime_error {
-   public:
-    using std::runtime_error::runtime_error;
-};
+/**
+ * @brief Reports a runtime error.
+ */
+inline void runtimeError(RuntimeError error) {
+    std::cerr << error.what() << "\n[line " << error.token.line << "]" << std::endl;
+    hadRuntimeError = true;
+}
 
 #endif

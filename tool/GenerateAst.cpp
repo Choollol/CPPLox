@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "util.hpp"
+#include "ToolUtil.hpp"
 
 /**
  * @brief Writes everything to the file.

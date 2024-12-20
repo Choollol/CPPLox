@@ -5,11 +5,17 @@
 
 #include "include/AstPrinter.hpp"
 #include "include/Error.hpp"
+#include "include/Interpreter.hpp"
 #include "include/Parser.hpp"
 #include "include/Scanner.hpp"
 #include "include/Token.hpp"
 
 extern bool hadError;
+extern bool hadRuntimeError;
+
+namespace {
+Interpreter interpreter;
+}
 
 /**
  * @brief Reads source code from a file and executes it.
@@ -57,7 +63,7 @@ void run(const std::string& source) {
         return;
     }
 
-    std::cout << AstPrinter().print(expr) << std::endl;
+    interpreter.interpret(expr);
 }
 
 void runFile(const std::string& path) {
@@ -73,6 +79,9 @@ void runFile(const std::string& path) {
     // Terminate program if error was found
     if (hadError) {
         exit(65);
+    }
+    else if (hadRuntimeError) {
+        exit(70);
     }
 }
 
