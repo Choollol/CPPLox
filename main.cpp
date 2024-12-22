@@ -56,14 +56,14 @@ void run(const std::string& source) {
     std::vector<Token> tokens = scanner.scanTokens();
 
     Parser parser(tokens);
-    std::shared_ptr<Expr> expr = parser.parse();
+    std::vector<std::shared_ptr<Stmt>> stmts = parser.parse();
 
     // Check for syntax error
     if (hadError) {
         return;
     }
 
-    interpreter.interpret(expr);
+    interpreter.interpret(stmts);
 }
 
 void runFile(const std::string& path) {

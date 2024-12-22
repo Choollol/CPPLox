@@ -7,6 +7,9 @@
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\AstPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Environment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

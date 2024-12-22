@@ -4,31 +4,47 @@
 #include <any>
 #include <memory>
 
+#include "Environment.hpp"
 #include "Expr.hpp"
+#include "Stmt.hpp"
 
-class Interpreter : public ExprVisitor {
+class Interpreter : public ExprVisitor, public StmtVisitor {
    public:
+    std::any visitAssignExpr(std::shared_ptr<Assign>) override;
     std::any visitBinaryExpr(std::shared_ptr<Binary>) override;
     std::any visitGroupingExpr(std::shared_ptr<Grouping>) override;
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitUnaryExpr(std::shared_ptr<Unary>) override;
+    std::any visitVariableExpr(std::shared_ptr<Variable>) override;
+
+    std::any visitBlockStmt(std::shared_ptr<Block>) override;
+    std::any visitExpressionStmt(std::shared_ptr<Expression>) override;
+    std::any visitPrintStmt(std::shared_ptr<Print>) override;
+    std::any visitVarStmt(std::shared_ptr<Var>) override;
 
     /// @brief Interprets a given expression. i.e. run the interpreter.
-    void interpret(std::shared_ptr<Expr>);
+    void interpret(std::vector<std::shared_ptr<Stmt>>);
 
    private:
-    /// @brief Helper method that uses the visitor pattern to return an expression's std::any. 
+    std::shared_ptr<Environment> environment{new Environment};
+
+    /// @brief Helper method that uses the visitor pattern to return an expression's std::any.
     std::any evaluate(std::shared_ptr<Expr>);
     /// @brief Returns a truth value based on the given std::any.
     bool isTruthy(const std::any&);
     /// @brief Checks if two std::any's are equal.
     bool isEqual(const std::any&, const std::any&);
-    /// @brief Checks if the given std::any holds a number. If it doesn't, throw an error with the given token. 
+    /// @brief Checks if the given std::any holds a number. If it doesn't, throw an error with the given token.
     void checkNumberOperand(const Token&, const std::any&);
     /// @brief Checks if the given std::any's hold numbers. If either doesn't, throw an error with the given token.
     void checkNumberOperands(const Token&, const std::any&, const std::any&);
     /// @brief Returns a std::string representation of the given std::any
     std::string stringify(const std::any&);
+
+    /// @brief Executes a statement
+    void execute(std::shared_ptr<Stmt>);
+    /// @brief Executes a block statement.
+    void executeBlock(const std::vector<std::shared_ptr<Stmt>>&, std::shared_ptr<Environment>);
 };
 
 #endif

@@ -1,14 +1,15 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #include "ToolUtil.hpp"
 
 /**
- * @brief Writes everything to the file.
+ * @brief Writes everything to the files.
  */
-void defineAst(const std::string&, const std::string&, const std::vector<std::string_view>&);
+void defineAst(const std::string&, const std::string&, const std::vector<std::string_view>&, const std::vector<std::string_view>& = std::vector<std::string_view>());
 
 /**
  * @brief Writes a class of a given type.
@@ -28,49 +29,89 @@ int main(int argc, char* argv[]) {
 
     std::string outputDir = argv[1];
 
-    std::vector<std::string_view> types{
+    // Generate expression code
+    std::vector<std::string_view> exprTypes{
+        "Assign   : Token name, Expr* value",
         "Binary   : Expr* left, Token oper, Expr* right",
         "Grouping : Expr* expression",
         "Literal  : Object value",
         "Unary    : Token oper, Expr* right",
+        "Variable : Token name",
     };
-    defineAst(outputDir, "Expr", types);
+    defineAst(outputDir, "Expr", exprTypes);
+
+    // Generate statement code
+    std::vector<std::string_view> stmtTypes{
+        "Block      : vector<Stmt*> statements",
+        "Expression : Expr* expression",
+        "Print      : Expr* expression",
+        "Var        : Token name, Expr* initializer",
+    };
+    std::vector<std::string_view> stmtIncludes{
+        "\"Expr.hpp\"",
+    };
+    defineAst(outputDir, "Stmt", stmtTypes, stmtIncludes);
 }
 
 /**
  * @brief Fixes the type of the given field. Ex: Expr* becomes std::shared_ptr<Expr>, Object becomes std::any.
  */
 std::string fixType(std::string_view field, bool isParam = false) {
-    std::string out;
+    std::ostringstream oss;
 
     std::string_view type = split(field, " ")[0];
     std::string_view name = split(field, " ")[1];
 
-    if (type.back() == '*') {
-        type.remove_suffix(1);
-        out += "std::shared_ptr<";
-        out += type;
-        out += ">";
+    bool addRef = false;
+
+    if (type.find("vector") != std::string_view::npos) {
+        if (isParam) {
+            oss << "const ";
+            addRef = true;
+        }
+        oss << "std::";
+    }
+
+    size_t pos;
+    if ((pos = type.find('*')) != std::string_view::npos) {
+        // Of the form Type*
+        if (pos == type.size() - 1) {
+            type.remove_suffix(1);
+            oss << "std::shared_ptr<" << type << ">";
+        }
+        // Of the form some_template<Type*>
+        else {
+            size_t oPos = pos;
+            size_t len = 0;
+            while (pos > 1 && type[pos - 1] != '<') {
+                --pos;
+                ++len;
+            }
+            oss << type.substr(0, pos) << "std::shared_ptr<" << type.substr(pos, len) << ">" << type.substr(oPos + 1, std::string_view::npos);
+        }
     }
     else if (type == "Object") {
-        out += "std::any";
+        oss << "std::any";
     }
     else if (type == "Token" && isParam) {
-        out += "const ";
-        out += type;
-        out += "&";
+        oss << "const " << type;
+        addRef = true;
     }
     else {
-        out += type;
+        oss << type;
     }
 
-    out += " ";
-    out += name;
+    if (addRef) {
+        oss << "&";
+    }
 
-    return out;
+    oss << " " << name;
+
+    return oss.str();
 }
 
-void defineAst(const std::string& outputDir, const std::string& baseName, const std::vector<std::string_view>& types) {
+void defineAst(const std::string& outputDir, const std::string& baseName, const std::vector<std::string_view>& types,
+               const std::vector<std::string_view>& extraIncludes) {
     std::string path = outputDir + "/" + baseName + ".hpp";
 
     std::ofstream writer(path);
@@ -84,7 +125,11 @@ void defineAst(const std::string& outputDir, const std::string& baseName, const 
     writer << "#include <any>\n"
               "#include <memory>\n"
               "#include <vector>\n"
-              "#include \"../include/Token.hpp\"\n\n";
+              "#include \"../include/Token.hpp\"\n";
+    for (std::string_view incl : extraIncludes) {
+        writer << "#include " << incl << "\n";
+    }
+    writer << "\n";
 
     // Class forward declarations so pointers to them can be used
     for (std::string_view type : types) {
@@ -140,7 +185,7 @@ void defineType(std::ofstream& writer, std::string_view baseName, std::string_vi
     for (size_t i = 1; i < fields.size(); ++i) {
         writer << ", " << fixType(fields[i], true);
     }
-    writer << ") :\n";
+    writer << ") : ";
 
     // Member initializer list
     std::string_view name = split(fields[0], " ")[1];
