@@ -3,10 +3,11 @@
 #include "../include/Error.hpp"
 #include "../include/Util.hpp"
 
-void Interpreter::interpret(std::shared_ptr<Expr> expr) {
+void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> stmts) {
     try {
-        std::any val = evaluate(expr);
-        std::cout << stringify(val) << std::endl;
+        for (auto stmt : stmts) {
+            execute(stmt);
+        }
     }
     catch (RuntimeError& error) {
         runtimeError(error);
@@ -87,6 +88,40 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
     return nullptr;
 }
 
+std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
+    return environment->get(expr->name);
+}
+std::any Interpreter::visitAssignExpr(std::shared_ptr<Assign> expr) {
+    std::any value = evaluate(expr->value);
+    environment->assign(expr->name, value);
+    return value;
+}
+
+std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
+    executeBlock(stmt->statements, std::make_shared<Environment>(environment));
+    return nullptr;
+}
+std::any Interpreter::visitExpressionStmt(std::shared_ptr<Expression> stmt) {
+    evaluate(stmt->expression);
+    return nullptr;
+}
+
+std::any Interpreter::visitPrintStmt(std::shared_ptr<Print> stmt) {
+    std::any obj = evaluate(stmt->expression);
+    std::cout << stringify(obj) << std::endl;
+    return nullptr;
+}
+
+std::any Interpreter::visitVarStmt(std::shared_ptr<Var> stmt) {
+    std::any value = nullptr;
+    if (stmt->initializer != nullptr) {
+        value = evaluate(stmt->initializer);
+    }
+
+    environment->define(stmt->name.lexeme, value);
+    return nullptr;
+}
+
 std::any Interpreter::evaluate(std::shared_ptr<Expr> expr) {
     return expr->accept(*this);
 }
@@ -139,8 +174,8 @@ std::string Interpreter::stringify(const std::any& obj) {
     }
     else if (obj.type() == typeid(double)) {
         std::string text = std::to_string(std::any_cast<double>(obj));
-        if (text.substr(text.size() - 2, 2) == ".0") {
-            text = text.substr(0, text.size() - 2);
+        if (text.size() >= 8 && text.substr(text.size() - 7, 7) == ".000000") {
+            text = text.substr(0, text.size() - 7);
         }
         return text;
     }
@@ -152,4 +187,24 @@ std::string Interpreter::stringify(const std::any& obj) {
     }
 
     return "Unrecognized type in Interpreter::stringify()";
+}
+
+void Interpreter::execute(std::shared_ptr<Stmt> stmt) {
+    stmt->accept(*this);
+}
+void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements, std::shared_ptr<Environment> env) {
+    auto previous = environment;
+    try {
+        environment = env;
+
+        for (const auto& statement : statements) {
+            execute(statement);
+        }
+    }
+    catch (...) {
+        environment = previous;
+        throw;
+    }
+
+    environment = previous;
 }

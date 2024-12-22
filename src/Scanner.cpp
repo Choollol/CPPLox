@@ -121,8 +121,7 @@ void Scanner::string() {
     // Advance past closing "
     advance();
 
-    // +1 and -1 to exclude quotes
-    addToken(TokenType::STRING, source.substr(start + 1, current - 1));
+    addToken(TokenType::STRING, source.substr(start + 1, current - 2 - start));
 }
 
 void Scanner::number() {
@@ -153,7 +152,7 @@ void Scanner::identifier() {
 
     // Default to be a user-defined identifier
     TokenType type = TokenType::IDENTIFIER;
-    auto it = keywords.find(source.substr(start, current));
+    auto it = keywords.find(source.substr(start, current - start));
     // Identifier was found to be a keyword
     if (it != keywords.end()) {
         type = it->second;

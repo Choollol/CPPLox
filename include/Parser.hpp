@@ -7,6 +7,7 @@
 
 #include "Error.hpp"
 #include "Expr.hpp"
+#include "Stmt.hpp"
 #include "Token.hpp"
 
 class Parser {
@@ -14,54 +15,59 @@ class Parser {
     Parser(const std::vector<Token>& tok) : tokens(tok) {}
 
     /**
-     * @brief Begins the parsing process.
+     * @brief Begin the parsing process.
      */
-    std::shared_ptr<Expr> parse();
+    std::vector<std::shared_ptr<Stmt>> parse();
 
    private:
     std::vector<Token> tokens;
     size_t current = 0;
 
-    /**
-     * @brief Lowest precedence, handles general expressions.
-     */
-    std::shared_ptr<Expr> expression() {
-        return equality();
-    }
+    /// @brief Handles declarations.
+    std::shared_ptr<Stmt> declaration();
+
+    /// @brief Handles statements.
+    std::shared_ptr<Stmt> statement();
 
     /**
-     * @brief Second lowest precedence, handles equality expressions.
+     * @brief Handles general expressions.
+     */
+    std::shared_ptr<Expr> expression();
+
+    /// @brief Handles assignment expressions.
+    std::shared_ptr<Expr> assignment();
+
+    /**
+     * @brief Handles equality expressions.
      */
     std::shared_ptr<Expr> equality();
 
     /**
-     * @brief Third lowest precedence, handles comparison/relative expressions.
+     * @brief Handles comparison/relative expressions.
      */
     std::shared_ptr<Expr> comparison();
 
     /**
-     * @brief Fourth lowest precedence, handles addition and subtraction.
+     * @brief Handles addition and subtraction.
      */
     std::shared_ptr<Expr> term();
 
     /**
-     * @brief Fifth lowest precedence, handles multiplication and division.
+     * @brief Handles multiplication and division.
      */
     std::shared_ptr<Expr> factor();
 
     /**
-     * @brief Sixth lowest and second highest precedence, handles unary expressions.
+     * @brief Handles unary expressions.
      */
     std::shared_ptr<Expr> unary();
 
     /**
-     * @brief Highest and seventh lowest precedence, handles literals and parenthesized expressions.
+     * @brief Handles literals and parenthesized expressions.
      */
     std::shared_ptr<Expr> primary();
 
-    /**
-     * @brief Helper function to reduce code duplication when parsing binary expressions.
-     */
+    /// @brief Helper function to reduce code duplication when parsing (possibly) binary expressions.
     template <typename... Args>
     std::shared_ptr<Expr> binaryExpression(std::shared_ptr<Expr> (Parser::*)(), const Args...);
 
@@ -69,19 +75,17 @@ class Parser {
     template <typename... Args>
     bool match(const Args&...);
 
-    /**
-     * @brief Checks the current token against the given TokenType.
-     */
+    /// @brief Checks the current token against the given TokenType.
     bool check(TokenType);
 
     /// @brief Returns the current token without advancing.
     Token peek();
-    /// @brief Returns the previous token. 
+    /// @brief Returns the previous token.
     Token previous();
 
-    /// @brief Check whether the end of the list of tokens has been reached. 
+    /// @brief Check whether the end of the list of tokens has been reached.
     bool isAtEnd();
-    /// @brief Advance to the next token. 
+    /// @brief Advance to the next token.
     Token advance();
 
     /// @brief If the current token matches the given TokenType, advance. Otherwise, throw a ParseError.
@@ -92,6 +96,18 @@ class Parser {
 
     /// @brief Try to recover from a ParseError.
     void synchronize();
+
+    /// @brief Handle a print statement.
+    std::shared_ptr<Print> printStatement();
+
+    /// @brief Handle an expression statement.
+    std::shared_ptr<Expression> expressionStatement();
+
+    /// @brief Handle variable declaration.
+    std::shared_ptr<Stmt> varDeclaration();
+
+    /// @brief Handle block statement.
+    std::vector<std::shared_ptr<Stmt>> block();
 };
 
 #endif
