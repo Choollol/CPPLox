@@ -105,7 +105,16 @@ std::any Interpreter::visitExpressionStmt(std::shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     return nullptr;
 }
+std::any Interpreter::visitIfStmt(std::shared_ptr<If> stmt) {
+    if (isTruthy(evaluate(stmt->condition))) {
+        execute(stmt->thenBranch);
+    }
+    else if (stmt->elseBranch) {
+        execute(stmt->elseBranch);
+    }
 
+    return nullptr;
+}
 std::any Interpreter::visitPrintStmt(std::shared_ptr<Print> stmt) {
     std::any obj = evaluate(stmt->expression);
     std::cout << stringify(obj) << std::endl;

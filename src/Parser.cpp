@@ -2,37 +2,6 @@
 
 #include <iostream>
 
-#include "../include/Expr.hpp"
-#include "../include/Stmt.hpp"
-
-std::vector<std::shared_ptr<Stmt>> Parser::parse() {
-    std::vector<std::shared_ptr<Stmt>> statements;
-    while (!isAtEnd()) {
-        statements.push_back(declaration());
-    }
-
-    return statements;
-}
-
-std::shared_ptr<Expr> Parser::expression() {
-    return assignment();
-}
-std::shared_ptr<Expr> Parser::assignment() {
-    std::shared_ptr<Expr> expr = equality();
-
-    if (match(TokenType::EQUAL)) {
-        Token equals = previous();
-        std::shared_ptr<Expr> value = assignment();
-
-        std::shared_ptr<Variable> var = std::dynamic_pointer_cast<Variable>(expr);
-        if (var) {
-            return std::make_shared<Assign>(var->name, value);
-        }
-
-        error(equals, "Invalid assignment target.");
-#include "../include/Expr.hpp"
-#include "../include/Stmt.hpp"
-
 std::vector<std::shared_ptr<Stmt>> Parser::parse() {
     std::vector<std::shared_ptr<Stmt>> statements;
     while (!isAtEnd()) {
@@ -63,8 +32,6 @@ std::shared_ptr<Expr> Parser::assignment() {
     return expr;
 }
 
-    return expr;
-}
 std::shared_ptr<Expr> Parser::equality() {
     return binaryExpression(&Parser::comparison, TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL);
 }

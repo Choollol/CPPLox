@@ -19,6 +19,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
 
     std::any visitBlockStmt(std::shared_ptr<Block>) override;
     std::any visitExpressionStmt(std::shared_ptr<Expression>) override;
+    std::any visitIfStmt(std::shared_ptr<If>) override;
     std::any visitPrintStmt(std::shared_ptr<Print>) override;
     std::any visitVarStmt(std::shared_ptr<Var>) override;
 
