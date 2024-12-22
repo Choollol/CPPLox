@@ -30,7 +30,38 @@ std::shared_ptr<Expr> Parser::assignment() {
         }
 
         error(equals, "Invalid assignment target.");
+#include "../include/Expr.hpp"
+#include "../include/Stmt.hpp"
+
+std::vector<std::shared_ptr<Stmt>> Parser::parse() {
+    std::vector<std::shared_ptr<Stmt>> statements;
+    while (!isAtEnd()) {
+        statements.push_back(declaration());
     }
+
+    return statements;
+}
+
+std::shared_ptr<Expr> Parser::expression() {
+    return assignment();
+}
+std::shared_ptr<Expr> Parser::assignment() {
+    std::shared_ptr<Expr> expr = equality();
+
+    if (match(TokenType::EQUAL)) {
+        Token equals = previous();
+        std::shared_ptr<Expr> value = assignment();
+
+        std::shared_ptr<Variable> var = std::dynamic_pointer_cast<Variable>(expr);
+        if (var) {
+            return std::make_shared<Assign>(var->name, value);
+        }
+
+        error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+}
 
     return expr;
 }
@@ -41,6 +72,7 @@ std::shared_ptr<Expr> Parser::comparison() {
     return binaryExpression(&Parser::term, TokenType::LESS, TokenType::LESS_EQUAL, TokenType::GREATER, TokenType::GREATER_EQUAL);
 }
 std::shared_ptr<Expr> Parser::term() {
+    return binaryExpression(&Parser::factor, TokenType::PLUS, TokenType::MINUS);
     return binaryExpression(&Parser::factor, TokenType::PLUS, TokenType::MINUS);
 }
 std::shared_ptr<Expr> Parser::factor() {
@@ -70,6 +102,10 @@ std::shared_ptr<Expr> Parser::primary() {
     // Number or string literal
     if (match(TokenType::NUMBER, TokenType::STRING)) {
         return std::make_shared<Literal>(previous().literal);
+    }
+
+    if (match(TokenType::IDENTIFIER)) {
+        return std::make_shared<Variable>(previous());
     }
 
     if (match(TokenType::IDENTIFIER)) {
