@@ -87,7 +87,6 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
     // Unreachable
     return nullptr;
 }
-
 std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
     return environment->get(expr->name);
 }
@@ -95,6 +94,16 @@ std::any Interpreter::visitAssignExpr(std::shared_ptr<Assign> expr) {
     std::any value = evaluate(expr->value);
     environment->assign(expr->name, value);
     return value;
+}
+std::any Interpreter::visitLogicalExpr(std::shared_ptr<Logical> expr) {
+    std::any left = evaluate(expr->left);
+
+    if ((expr->oper.type == TokenType::OR && isTruthy(left)) ||    // Logical OR short-circuit
+        (expr->oper.type == TokenType::AND && !isTruthy(left))) {  // Logical AND short-circuit
+        return left;
+    }
+
+    return evaluate(expr->right);
 }
 
 std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {

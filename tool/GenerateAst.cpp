@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
         "Binary   : Expr* left, Token oper, Expr* right",
         "Grouping : Expr* expression",
         "Literal  : Object value",
+        "Logical  : Expr* left, Token oper, Expr* right",
         "Unary    : Token oper, Expr* right",
         "Variable : Token name",
     };

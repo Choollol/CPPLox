@@ -37,6 +37,12 @@ class Parser {
     /// @brief Handles assignment expressions.
     std::shared_ptr<Expr> assignment();
 
+    /// @brief Handles logical or expressions.
+    std::shared_ptr<Expr> logicalOr();
+
+    /// @brief Handles logical and expressions.
+    std::shared_ptr<Expr> logicalAnd();
+
     /**
      * @brief Handles equality expressions.
      */
@@ -67,8 +73,8 @@ class Parser {
      */
     std::shared_ptr<Expr> primary();
 
-    /// @brief Helper function to reduce code duplication when parsing (possibly) binary expressions.
-    template <typename... Args>
+    /// @brief Helper function to reduce code duplication when parsing (possibly) binary expressions. Defaults to class Binary.
+    template <typename exprClass = Binary, typename... Args>
     std::shared_ptr<Expr> binaryExpression(std::shared_ptr<Expr> (Parser::*)(), const Args...);
 
     /// @brief Returns true if any of the given TokenTypes are matched with the current token.
