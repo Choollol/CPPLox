@@ -33,6 +33,9 @@ std::shared_ptr<Stmt> Parser::statement() {
     else if (match(TokenType::WHILE)) {
         return whileStatement();
     }
+    else if (match(TokenType::FOR)) {
+        return forStatement();
+    }
     else if (match(TokenType::LEFT_BRACE)) {
         return std::make_shared<Block>(block());
     }
@@ -74,6 +77,61 @@ std::shared_ptr<While> Parser::whileStatement() {
     std::shared_ptr<Stmt> body = statement();
 
     return std::make_shared<While>(condition, body);
+}
+
+std::shared_ptr<Stmt> Parser::forStatement() {
+    consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
+
+    // Initializer
+    std::shared_ptr<Stmt> initializer;
+    // Empty initializer
+    if (match(TokenType::SEMICOLON)) {
+        initializer = nullptr;
+    }
+    // Variable declaration
+    else if (match(TokenType::VAR)) {
+        initializer = varDeclaration();
+    }
+    // Expression statement
+    else {
+        initializer = expressionStatement();
+    }
+
+    // Condition
+    std::shared_ptr<Expr> condition = nullptr;
+    if (!check(TokenType::SEMICOLON)) {
+        condition = expression();
+    }
+    consume(TokenType::SEMICOLON, "Expect ';' after for-loop condition.");
+
+    // Increment
+    std::shared_ptr<Expr> increment = nullptr;
+    if (!check(TokenType::RIGHT_PAREN)) {
+        increment = expression();
+    }
+    consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    // Body
+    std::shared_ptr<Stmt> body = statement();
+
+    // Add increment to end of body if one is given
+    if (increment != nullptr) {
+        body = std::make_shared<Block>(std::vector<std::shared_ptr<Stmt>>{body, std::make_shared<Expression>(increment)});
+    }
+
+    // Substitute true for condition if one isn't given
+    if (condition == nullptr) {
+        condition = std::make_shared<Literal>(true);
+    }
+
+    body = std::make_shared<While>(condition, body);
+
+    // Add initializer before everything if one is given
+    if (initializer != nullptr) {
+        body = std::make_shared<Block>(std::vector<std::shared_ptr<Stmt>>{initializer, body});
+    }
+
+    return body;
 }
 
 std::vector<std::shared_ptr<Stmt>> Parser::block() {

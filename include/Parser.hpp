@@ -115,6 +115,9 @@ class Parser {
     /// @brief Handles a while loop.
     std::shared_ptr<While> whileStatement();
 
+    /// @brief Handles a for loop.
+    std::shared_ptr<Stmt> forStatement();
+
     /// @brief Handle variable declaration.
     std::shared_ptr<Stmt> varDeclaration();
 
