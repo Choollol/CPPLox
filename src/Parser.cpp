@@ -30,6 +30,9 @@ std::shared_ptr<Stmt> Parser::statement() {
     else if (match(TokenType::PRINT)) {
         return printStatement();
     }
+    else if (match(TokenType::WHILE)) {
+        return whileStatement();
+    }
     else if (match(TokenType::LEFT_BRACE)) {
         return std::make_shared<Block>(block());
     }
@@ -49,7 +52,7 @@ std::shared_ptr<Expression> Parser::expressionStatement() {
     return std::make_shared<Expression>(expr);
 }
 
-std::shared_ptr<Stmt> Parser::ifStatement() {
+std::shared_ptr<If> Parser::ifStatement() {
     consume(TokenType::LEFT_PAREN, "Expect '(' after 'if'.");
     std::shared_ptr<Expr> condition = expression();
     consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
@@ -61,6 +64,16 @@ std::shared_ptr<Stmt> Parser::ifStatement() {
     }
 
     return std::make_shared<If>(condition, thenBranch, elseBranch);
+}
+
+std::shared_ptr<While> Parser::whileStatement() {
+    consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
+    std::shared_ptr<Expr> condition = expression();
+    consume(TokenType::RIGHT_PAREN, "Expect ')' after while condition.");
+
+    std::shared_ptr<Stmt> body = statement();
+
+    return std::make_shared<While>(condition, body);
 }
 
 std::vector<std::shared_ptr<Stmt>> Parser::block() {

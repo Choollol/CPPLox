@@ -23,6 +23,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     std::any visitIfStmt(std::shared_ptr<If>) override;
     std::any visitPrintStmt(std::shared_ptr<Print>) override;
     std::any visitVarStmt(std::shared_ptr<Var>) override;
+    std::any visitWhileStmt(std::shared_ptr<While>) override;
 
     /// @brief Interprets a given expression. i.e. run the interpreter.
     void interpret(std::vector<std::shared_ptr<Stmt>>);

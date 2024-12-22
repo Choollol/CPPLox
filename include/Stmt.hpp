@@ -12,6 +12,7 @@ class Expression;
 class If;
 class Print;
 class Var;
+class While;
 
 struct StmtVisitor {
 	virtual std::any visitBlockStmt(std::shared_ptr<Block> stmt) = 0;
@@ -19,6 +20,7 @@ struct StmtVisitor {
 	virtual std::any visitIfStmt(std::shared_ptr<If> stmt) = 0;
 	virtual std::any visitPrintStmt(std::shared_ptr<Print> stmt) = 0;
 	virtual std::any visitVarStmt(std::shared_ptr<Var> stmt) = 0;
+	virtual std::any visitWhileStmt(std::shared_ptr<While> stmt) = 0;
 	virtual ~StmtVisitor() = default;
 };
 
@@ -83,6 +85,18 @@ class Var : public Stmt, public std::enable_shared_from_this<Var> {
 
 	const Token name;
 	const std::shared_ptr<Expr> initializer;
+};
+
+class While : public Stmt, public std::enable_shared_from_this<While> {
+	public:
+	While(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body) : condition(condition), body(body){}
+
+	std::any accept(StmtVisitor& visitor) override {
+		return visitor.visitWhileStmt(shared_from_this());
+	}
+
+	const std::shared_ptr<Expr> condition;
+	const std::shared_ptr<Stmt> body;
 };
 
 #endif

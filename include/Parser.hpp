@@ -110,7 +110,10 @@ class Parser {
     std::shared_ptr<Expression> expressionStatement();
 
     /// @brief Handles an if statement.
-    std::shared_ptr<Stmt> ifStatement();
+    std::shared_ptr<If> ifStatement();
+
+    /// @brief Handles a while loop.
+    std::shared_ptr<While> whileStatement();
 
     /// @brief Handle variable declaration.
     std::shared_ptr<Stmt> varDeclaration();

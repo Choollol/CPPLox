@@ -114,16 +114,6 @@ std::any Interpreter::visitExpressionStmt(std::shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     return nullptr;
 }
-std::any Interpreter::visitIfStmt(std::shared_ptr<If> stmt) {
-    if (isTruthy(evaluate(stmt->condition))) {
-        execute(stmt->thenBranch);
-    }
-    else if (stmt->elseBranch) {
-        execute(stmt->elseBranch);
-    }
-
-    return nullptr;
-}
 std::any Interpreter::visitPrintStmt(std::shared_ptr<Print> stmt) {
     std::any obj = evaluate(stmt->expression);
     std::cout << stringify(obj) << std::endl;
@@ -137,6 +127,23 @@ std::any Interpreter::visitVarStmt(std::shared_ptr<Var> stmt) {
     }
 
     environment->define(stmt->name.lexeme, value);
+    return nullptr;
+}
+std::any Interpreter::visitIfStmt(std::shared_ptr<If> stmt) {
+    if (isTruthy(evaluate(stmt->condition))) {
+        execute(stmt->thenBranch);
+    }
+    else if (stmt->elseBranch) {
+        execute(stmt->elseBranch);
+    }
+
+    return nullptr;
+}
+std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
+    while (isTruthy(evaluate(stmt->condition))) {
+        execute(stmt->body);
+    }
+
     return nullptr;
 }
 
