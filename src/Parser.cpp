@@ -112,7 +112,10 @@ std::shared_ptr<Stmt> Parser::declaration() {
     }
 }
 std::shared_ptr<Stmt> Parser::statement() {
-    if (match(TokenType::PRINT)) {
+    if (match(TokenType::IF)) {
+        return ifStatement();
+    }
+    else if (match(TokenType::PRINT)) {
         return printStatement();
     }
     else if (match(TokenType::LEFT_BRACE)) {
@@ -132,6 +135,20 @@ std::shared_ptr<Expression> Parser::expressionStatement() {
     std::shared_ptr<Expr> expr = expression();
     consume(TokenType::SEMICOLON, "Expect ';' after expression.");
     return std::make_shared<Expression>(expr);
+}
+
+std::shared_ptr<Stmt> Parser::ifStatement() {
+    consume(TokenType::LEFT_PAREN, "Expect '(' after 'if'.");
+    std::shared_ptr<Expr> condition = expression();
+    consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+
+    std::shared_ptr<Stmt> thenBranch = statement();
+    std::shared_ptr<Stmt> elseBranch = nullptr;
+    if (match(TokenType::ELSE)) {
+        elseBranch = statement();
+    }
+
+    return std::make_shared<If>(condition, thenBranch, elseBranch);
 }
 
 std::vector<std::shared_ptr<Stmt>> Parser::block() {

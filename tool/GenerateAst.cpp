@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string_view> stmtTypes{
         "Block      : vector<Stmt*> statements",
         "Expression : Expr* expression",
+        "If         : Expr* condition, Stmt* thenBranch, Stmt* elseBranch",
         "Print      : Expr* expression",
         "Var        : Token name, Expr* initializer",
     };
