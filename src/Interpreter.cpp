@@ -1,7 +1,14 @@
 #include "../include/Interpreter.hpp"
 
 #include "../include/Error.hpp"
+#include "../include/LoxCallable.hpp"
+#include "../include/LoxFunction.hpp"
+#include "../include/NativeFunctions.hpp"
 #include "../include/Util.hpp"
+
+Interpreter::Interpreter() {
+    globals->define("clock", std::make_shared<NativeClock>());
+}
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> stmts) {
     try {
@@ -105,6 +112,27 @@ std::any Interpreter::visitLogicalExpr(std::shared_ptr<Logical> expr) {
 
     return evaluate(expr->right);
 }
+std::any Interpreter::visitCallExpr(std::shared_ptr<Call> expr) {
+    std::any callee = evaluate(expr->callee);
+
+    std::vector<std::any> arguments;
+    for (auto arg : expr->arguments) {
+        arguments.push_back(evaluate(arg));
+    }
+
+    // Check that callee is a callable
+    std::shared_ptr<LoxCallable> function;
+    if (!(function = ptrAnyCast<NativeClock>(callee)) && !(function = ptrAnyCast<LoxFunction>(callee))) {
+        throw RuntimeError(expr->paren, "Can only call functions and classes.");
+    }
+
+    if (arguments.size() != function->arity()) {
+        throw RuntimeError(expr->paren, "Expected " + std::to_string(function->arity()) + " arguments but got " +
+                                            std::to_string(arguments.size()) + ".");
+    }
+
+    return function->call(*this, arguments);
+}
 
 std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
     executeBlock(stmt->statements, std::make_shared<Environment>(environment));
@@ -144,6 +172,11 @@ std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
         execute(stmt->body);
     }
 
+    return nullptr;
+}
+std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
+    std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(stmt);
+    environment->define(stmt->name.lexeme, function);
     return nullptr;
 }
 

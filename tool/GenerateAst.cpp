@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string_view> exprTypes{
         "Assign   : Token name, Expr* value",
         "Binary   : Expr* left, Token oper, Expr* right",
+        "Call     : Expr* callee, Token paren, vector<Expr*> arguments",
         "Grouping : Expr* expression",
         "Literal  : Object value",
         "Logical  : Expr* left, Token oper, Expr* right",
@@ -45,6 +46,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::string_view> stmtTypes{
         "Block      : vector<Stmt*> statements",
         "Expression : Expr* expression",
+        "Function   : Token name, vector<Token> params, vector<Stmt*> body",
         "If         : Expr* condition, Stmt* thenBranch, Stmt* elseBranch",
         "Print      : Expr* expression",
         "Var        : Token name, Expr* initializer",

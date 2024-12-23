@@ -9,9 +9,14 @@
 #include "Stmt.hpp"
 
 class Interpreter : public ExprVisitor, public StmtVisitor {
+    friend class LoxFunction;
+
    public:
+    Interpreter();
+
     std::any visitAssignExpr(std::shared_ptr<Assign>) override;
     std::any visitBinaryExpr(std::shared_ptr<Binary>) override;
+    std::any visitCallExpr(std::shared_ptr<Call>) override;
     std::any visitGroupingExpr(std::shared_ptr<Grouping>) override;
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitLogicalExpr(std::shared_ptr<Logical>) override;
@@ -20,6 +25,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
 
     std::any visitBlockStmt(std::shared_ptr<Block>) override;
     std::any visitExpressionStmt(std::shared_ptr<Expression>) override;
+    std::any visitFunctionStmt(std::shared_ptr<Function>) override;
     std::any visitIfStmt(std::shared_ptr<If>) override;
     std::any visitPrintStmt(std::shared_ptr<Print>) override;
     std::any visitVarStmt(std::shared_ptr<Var>) override;
@@ -29,7 +35,8 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     void interpret(std::vector<std::shared_ptr<Stmt>>);
 
    private:
-    std::shared_ptr<Environment> environment{new Environment};
+    std::shared_ptr<Environment> globals{new Environment};
+    std::shared_ptr<Environment> environment = globals;
 
     /// @brief Helper method that uses the visitor pattern to return an expression's std::any.
     std::any evaluate(std::shared_ptr<Expr>);

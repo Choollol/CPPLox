@@ -73,15 +73,21 @@ class Parser {
      */
     std::shared_ptr<Expr> primary();
 
+    /// @brief Handles call expressions.
+    std::shared_ptr<Expr> call();
+
     /// @brief Helper function to reduce code duplication when parsing (possibly) binary expressions. Defaults to class Binary.
     template <typename exprClass = Binary, typename... Args>
     std::shared_ptr<Expr> binaryExpression(std::shared_ptr<Expr> (Parser::*)(), const Args...);
 
-    /// @brief Returns true if any of the given TokenTypes are matched with the current token.
+    /// @brief Parse a call expression's argument list.
+    std::shared_ptr<Expr> finishCall(std::shared_ptr<Expr>);
+
+    /// @brief Returns true and advances if any of the given TokenTypes are matched with the current token.
     template <typename... Args>
     bool match(const Args&...);
 
-    /// @brief Checks the current token against the given TokenType.
+    /// @brief Checks the current token against the given TokenType without advancing.
     bool check(TokenType);
 
     /// @brief Returns the current token without advancing.
@@ -118,11 +124,14 @@ class Parser {
     /// @brief Handles a for loop.
     std::shared_ptr<Stmt> forStatement();
 
+    /// @brief Handle a block statement. Assumes the opening LEFT_BRACE has been consumed already.
+    std::vector<std::shared_ptr<Stmt>> block();
+
     /// @brief Handle variable declaration.
     std::shared_ptr<Stmt> varDeclaration();
 
-    /// @brief Handle block statement.
-    std::vector<std::shared_ptr<Stmt>> block();
+    /// @brief Handle function or method declaration.
+    std::shared_ptr<Function> functionDeclaration(const std::string&);
 };
 
 #endif

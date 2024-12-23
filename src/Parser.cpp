@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+constexpr size_t maxArguments = 255;
+
 std::vector<std::shared_ptr<Stmt>> Parser::parse() {
     std::vector<std::shared_ptr<Stmt>> statements;
     while (!isAtEnd()) {
@@ -15,6 +17,9 @@ std::shared_ptr<Stmt> Parser::declaration() {
     try {
         if (match(TokenType::VAR)) {
             return varDeclaration();
+        }
+        else if (match(TokenType::FUN)) {
+            return functionDeclaration("function");
         }
         return statement();
     }
@@ -156,6 +161,27 @@ std::shared_ptr<Stmt> Parser::varDeclaration() {
     consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
     return std::make_shared<Var>(name, initializer);
 }
+std::shared_ptr<Function> Parser::functionDeclaration(const std::string& type) {
+    Token name = consume(TokenType::IDENTIFIER, "Expect " + type + " name.");
+
+    consume(TokenType::LEFT_PAREN, "Expect '(' after " + type + " name.");
+    std::vector<Token> parameters;
+    if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+            if (parameters.size() > maxArguments) {
+                error(peek(), "Can't have more than 255 parameters.");
+            }
+
+            parameters.push_back(consume(TokenType::IDENTIFIER, "Expect parameter name"));
+        } while (match(TokenType::COMMA));
+    }
+
+    consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+
+    consume(TokenType::LEFT_BRACE, "Expect '{' before " + type + " body.");
+    std::vector<std::shared_ptr<Stmt>> body = block();
+    return std::make_shared<Function>(name, parameters, body);
+}
 
 std::shared_ptr<Expr> Parser::expression() {
     return assignment();
@@ -204,7 +230,21 @@ std::shared_ptr<Expr> Parser::unary() {
         return std::make_shared<Unary>(op, rhs);
     }
 
-    return primary();
+    return call();
+}
+std::shared_ptr<Expr> Parser::call() {
+    auto expr = primary();
+
+    while (true) {
+        if (match(TokenType::LEFT_PAREN)) {
+            expr = finishCall(expr);
+        }
+        else {
+            break;
+        }
+    }
+
+    return expr;
 }
 std::shared_ptr<Expr> Parser::primary() {
     // Booleans and null
@@ -252,6 +292,24 @@ std::shared_ptr<Expr> Parser::binaryExpression(std::shared_ptr<Expr> (Parser::*f
     }
 
     return expr;
+}
+
+std::shared_ptr<Expr> Parser::finishCall(std::shared_ptr<Expr> callee) {
+    std::vector<std::shared_ptr<Expr>> arguments;
+
+    // Check for non-empty argument list
+    if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+            if (arguments.size() >= maxArguments) {
+                error(peek(), "Can't have more than " + std::to_string(maxArguments) + " arguments.");
+            }
+            arguments.push_back(expression());
+        } while (match(TokenType::COMMA));
+    }
+
+    Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
+
+    return std::make_shared<Call>(callee, paren, arguments);
 }
 
 Token Parser::consume(TokenType type, std::string_view msg) {

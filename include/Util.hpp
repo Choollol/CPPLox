@@ -18,4 +18,15 @@ inline std::string boolToString(const std::any& obj) {
     return boolToString(std::any_cast<bool>(obj));
 }
 
+/// @brief If the given std::any holds a std::shared_ptr to the specified type, return a casted std::shared_ptr. Otherwise, return nullptr.
+template <typename T>
+std::shared_ptr<T> ptrAnyCast(std::any& obj) {
+    if (obj.type() == typeid(std::shared_ptr<T>)) {
+        return std::any_cast<std::shared_ptr<T>>(obj);
+    }
+    else {
+        return nullptr;
+    }
+}
+
 #endif
