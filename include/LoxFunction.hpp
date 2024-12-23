@@ -5,7 +5,7 @@
 
 class LoxFunction : public LoxCallable {
    public:
-    LoxFunction(std::shared_ptr<Function> decl) : declaration(decl) {}
+    LoxFunction(std::shared_ptr<Function> decl, std::shared_ptr<Environment> clos) : declaration(decl), closure(clos) {}
 
     size_t arity() override { return declaration->params.size(); }
     std::any call(Interpreter&, const std::vector<std::any>&) override;
@@ -13,6 +13,7 @@ class LoxFunction : public LoxCallable {
 
    private:
     const std::shared_ptr<Function> declaration;
+    const std::shared_ptr<Environment> closure;
 };
 
 #endif

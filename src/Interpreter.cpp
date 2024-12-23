@@ -182,7 +182,7 @@ std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
     return nullptr;
 }
 std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
-    std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(stmt);
+    std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(stmt, environment);
     environment->define(stmt->name.lexeme, function);
     return nullptr;
 }
