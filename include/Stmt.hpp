@@ -13,6 +13,7 @@ class Expression;
 class Function;
 class If;
 class Print;
+class Return;
 class Var;
 class While;
 
@@ -22,6 +23,7 @@ struct StmtVisitor {
     virtual std::any visitFunctionStmt(std::shared_ptr<Function> stmt) = 0;
     virtual std::any visitIfStmt(std::shared_ptr<If> stmt) = 0;
     virtual std::any visitPrintStmt(std::shared_ptr<Print> stmt) = 0;
+    virtual std::any visitReturnStmt(std::shared_ptr<Return> stmt) = 0;
     virtual std::any visitVarStmt(std::shared_ptr<Var> stmt) = 0;
     virtual std::any visitWhileStmt(std::shared_ptr<While> stmt) = 0;
     virtual ~StmtVisitor() = default;
@@ -89,6 +91,18 @@ class Print : public Stmt, public std::enable_shared_from_this<Print> {
     }
 
     const std::shared_ptr<Expr> expression;
+};
+
+class Return : public Stmt, public std::enable_shared_from_this<Return> {
+   public:
+    Return(const Token& keyword, std::shared_ptr<Expr> value) : keyword(keyword), value(value) {}
+
+    std::any accept(StmtVisitor& visitor) override {
+        return visitor.visitReturnStmt(shared_from_this());
+    }
+
+    const Token keyword;
+    const std::shared_ptr<Expr> value;
 };
 
 class Var : public Stmt, public std::enable_shared_from_this<Var> {

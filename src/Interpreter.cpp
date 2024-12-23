@@ -3,6 +3,7 @@
 #include "../include/Error.hpp"
 #include "../include/LoxCallable.hpp"
 #include "../include/LoxFunction.hpp"
+#include "../include/LoxReturn.hpp"
 #include "../include/NativeFunctions.hpp"
 #include "../include/Util.hpp"
 
@@ -70,6 +71,12 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
             }
             else if (left.type() == typeid(std::string) && right.type() == typeid(std::string)) {
                 return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
+            }
+            else if (left.type() == typeid(std::string) && right.type() == typeid(double)) {
+                return std::any_cast<std::string>(left) + std::to_string(std::any_cast<double>(right));
+            }
+            else if (left.type() == typeid(double) && right.type() == typeid(std::string)) {
+                return std::to_string(std::any_cast<double>(left)) + std::any_cast<std::string>(right);
             }
             else {
                 throw RuntimeError(expr->oper, "Operands must be two numbers or strings.");
@@ -178,6 +185,14 @@ std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
     std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(stmt);
     environment->define(stmt->name.lexeme, function);
     return nullptr;
+}
+std::any Interpreter::visitReturnStmt(std::shared_ptr<Return> stmt) {
+    std::any value = nullptr;
+    if (stmt != nullptr) {
+        value = evaluate(stmt->value);
+    }
+
+    throw LoxReturn{value};
 }
 
 std::any Interpreter::evaluate(std::shared_ptr<Expr> expr) {

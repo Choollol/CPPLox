@@ -35,6 +35,9 @@ std::shared_ptr<Stmt> Parser::statement() {
     else if (match(TokenType::PRINT)) {
         return printStatement();
     }
+    else if (match(TokenType::RETURN)) {
+        return returnStatement();
+    }
     else if (match(TokenType::WHILE)) {
         return whileStatement();
     }
@@ -137,6 +140,20 @@ std::shared_ptr<Stmt> Parser::forStatement() {
     }
 
     return body;
+}
+
+std::shared_ptr<Stmt> Parser::returnStatement() {
+    Token keyword = previous();
+
+    std::shared_ptr<Expr> value = nullptr;
+
+    // Check for implicit null return
+    if (!check(TokenType::SEMICOLON)) {
+        value = expression();
+    }
+
+    consume(TokenType::SEMICOLON, "Expect ';' after return value.");
+    return std::make_shared<Return>(keyword, value);
 }
 
 std::vector<std::shared_ptr<Stmt>> Parser::block() {

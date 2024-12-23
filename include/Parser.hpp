@@ -124,6 +124,9 @@ class Parser {
     /// @brief Handles a for loop.
     std::shared_ptr<Stmt> forStatement();
 
+    /// @brief Handles a return statement.
+    std::shared_ptr<Stmt> returnStatement();
+
     /// @brief Handle a block statement. Assumes the opening LEFT_BRACE has been consumed already.
     std::vector<std::shared_ptr<Stmt>> block();
 

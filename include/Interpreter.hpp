@@ -28,6 +28,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     std::any visitFunctionStmt(std::shared_ptr<Function>) override;
     std::any visitIfStmt(std::shared_ptr<If>) override;
     std::any visitPrintStmt(std::shared_ptr<Print>) override;
+    std::any visitReturnStmt(std::shared_ptr<Return>) override;
     std::any visitVarStmt(std::shared_ptr<Var>) override;
     std::any visitWhileStmt(std::shared_ptr<While>) override;
 

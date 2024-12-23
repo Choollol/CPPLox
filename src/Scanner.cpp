@@ -169,8 +169,8 @@ inline void Scanner::singleLineComment() {
 void Scanner::blockComment() {
     // Advance until block comment is closed or end of source is hit
     while (!isAtEnd()) {
-        if (peek() == '*' && peekNext() == '/') {
-            break;
+        if (match('*') && match('/')) {
+            return;
         }
         else if (peek() == '\n') {
             ++line;
