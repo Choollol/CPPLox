@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "CPPLox.dir\\Debug\\Resolver.obj",
+            "outputs": [
+                "C:\\E\\_VSCode_Projects\\CPPLox\\build\\CPPLox.dir\\Debug\\vc143.pdb",
+                "CPPLox.dir\\Debug\\"
+            ],
+            "requires": []
+        }
+    ]
+}

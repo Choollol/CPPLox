@@ -35,9 +35,13 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     /// @brief Interprets a given expression. i.e. run the interpreter.
     void interpret(std::vector<std::shared_ptr<Stmt>>);
 
+    /// @brief Records the number of scopes between the variable usage and its original scope.
+    void resolve(std::shared_ptr<Expr>, size_t);
+
    private:
     std::shared_ptr<Environment> globals{new Environment};
     std::shared_ptr<Environment> environment = globals;
+    std::map<std::shared_ptr<Expr>, size_t> locals;
 
     /// @brief Helper method that uses the visitor pattern to return an expression's std::any.
     std::any evaluate(std::shared_ptr<Expr>);
@@ -52,10 +56,13 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     /// @brief Returns a std::string representation of the given std::any
     std::string stringify(const std::any&);
 
-    /// @brief Executes a statement
+    /// @brief Executes a statement.
     void execute(std::shared_ptr<Stmt>);
     /// @brief Executes a block statement.
     void executeBlock(const std::vector<std::shared_ptr<Stmt>>&, std::shared_ptr<Environment>);
+
+    /// @brief Get a variable's value by searching the enclosing environments.
+    std::any lookUpVariable(const Token&, std::shared_ptr<Variable>);
 };
 
 #endif

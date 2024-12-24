@@ -328,6 +328,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\LoxFunction.cpp" />
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\NativeFunctions.cpp" />
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Parser.cpp" />
+    <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Resolver.cpp" />
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Scanner.cpp" />
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Token.cpp" />
   </ItemGroup>

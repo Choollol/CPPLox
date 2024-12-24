@@ -6,5 +6,6 @@ C:\E\_VSCode_Projects\CPPLox\src\Interpreter.cpp;C:\E\_VSCode_Projects\CPPLox\bu
 C:\E\_VSCode_Projects\CPPLox\src\LoxFunction.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\LoxFunction.obj
 C:\E\_VSCode_Projects\CPPLox\src\NativeFunctions.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\NativeFunctions.obj
 C:\E\_VSCode_Projects\CPPLox\src\Parser.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Parser.obj
+C:\E\_VSCode_Projects\CPPLox\src\Resolver.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Resolver.obj
 C:\E\_VSCode_Projects\CPPLox\src\Scanner.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Scanner.obj
 C:\E\_VSCode_Projects\CPPLox\src\Token.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Token.obj

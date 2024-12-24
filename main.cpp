@@ -7,8 +7,11 @@
 #include "include/Error.hpp"
 #include "include/Interpreter.hpp"
 #include "include/Parser.hpp"
+#include "include/Resolver.hpp"
 #include "include/Scanner.hpp"
 #include "include/Token.hpp"
+
+#define DEBUG_PRINT 0
 
 extern bool hadError;
 extern bool hadRuntimeError;
@@ -54,16 +57,34 @@ int main(int argc, char* argv[]) {
 void run(const std::string& source) {
     Scanner scanner(source);
     std::vector<Token> tokens = scanner.scanTokens();
+#if DEBUG_PRINT != 0
+    std::cout << "Scanning completed" << std::endl;
+#endif
 
     Parser parser(tokens);
     std::vector<std::shared_ptr<Stmt>> stmts = parser.parse();
-
     // Check for syntax error
     if (hadError) {
         return;
     }
+#if DEBUG_PRINT != 0
+    std::cout << "Parsing completed" << std::endl;
+#endif
+
+    Resolver resolver(interpreter);
+    resolver.resolve(stmts);
+    // Check for resolution error
+    if (hadError) {
+        return;
+    }
+#if DEBUG_PRINT != 0
+    std::cout << "Resolution completed" << std::endl;
+#endif
 
     interpreter.interpret(stmts);
+#if DEBUG_PRINT != 0
+    std::cout << "Interpreting completed" << std::endl;
+#endif
 }
 
 void runFile(const std::string& path) {

@@ -25,6 +25,9 @@
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Resolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\Scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

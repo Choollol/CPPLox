@@ -79,7 +79,8 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
                 return std::to_string(std::any_cast<double>(left)) + std::any_cast<std::string>(right);
             }
             else {
-                throw RuntimeError(expr->oper, "Operands must be two numbers or strings.");
+                throw RuntimeError(expr->oper, "Operands must be two numbers or strings. Got: " +
+                                                   std::string(left.type().name()) + " and " + std::string(right.type().name()));
             }
         case TokenType::MINUS:
             checkNumberOperands(expr->oper, left, right);
@@ -102,11 +103,19 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
     return nullptr;
 }
 std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
-    return environment->get(expr->name);
+    return lookUpVariable(expr->name, expr);
 }
 std::any Interpreter::visitAssignExpr(std::shared_ptr<Assign> expr) {
     std::any value = evaluate(expr->value);
-    environment->assign(expr->name, value);
+
+    auto it = locals.find(expr);
+    if (it != locals.end()) {
+        environment->assignAt(it->second, expr->name, value);
+    }
+    else {
+        globals->assign(expr->name, value);
+    }
+
     return value;
 }
 std::any Interpreter::visitLogicalExpr(std::shared_ptr<Logical> expr) {
@@ -195,6 +204,10 @@ std::any Interpreter::visitReturnStmt(std::shared_ptr<Return> stmt) {
     throw LoxReturn{value};
 }
 
+void Interpreter::resolve(std::shared_ptr<Expr> expr, size_t depth) {
+    locals[expr] = depth;
+}
+
 std::any Interpreter::evaluate(std::shared_ptr<Expr> expr) {
     return expr->accept(*this);
 }
@@ -259,7 +272,7 @@ std::string Interpreter::stringify(const std::any& obj) {
         return std::any_cast<std::string>(obj);
     }
 
-    return "Unrecognized type in Interpreter::stringify()";
+    return "Unrecognized type in Interpreter::stringify(): " + std::string(obj.type().name());
 }
 
 void Interpreter::execute(std::shared_ptr<Stmt> stmt) {
@@ -280,4 +293,13 @@ void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& stateme
     }
 
     environment = previous;
+}
+std::any Interpreter::lookUpVariable(const Token& name, std::shared_ptr<Variable> expr) {
+    auto it = locals.find(expr);
+    if (it != locals.end()) {
+        return environment->getAt(it->second, name.lexeme);
+    }
+    else {
+        return globals->get(name);
+    }
 }
