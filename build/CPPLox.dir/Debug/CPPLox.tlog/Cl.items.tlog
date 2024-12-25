@@ -5,6 +5,7 @@ C:\E\_VSCode_Projects\CPPLox\src\Error.cpp;C:\E\_VSCode_Projects\CPPLox\build\CP
 C:\E\_VSCode_Projects\CPPLox\src\Interpreter.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Interpreter.obj
 C:\E\_VSCode_Projects\CPPLox\src\LoxClass.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\LoxClass.obj
 C:\E\_VSCode_Projects\CPPLox\src\LoxFunction.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\LoxFunction.obj
+C:\E\_VSCode_Projects\CPPLox\src\LoxInstance.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\LoxInstance.obj
 C:\E\_VSCode_Projects\CPPLox\src\NativeFunctions.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\NativeFunctions.obj
 C:\E\_VSCode_Projects\CPPLox\src\Parser.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Parser.obj
 C:\E\_VSCode_Projects\CPPLox\src\Resolver.cpp;C:\E\_VSCode_Projects\CPPLox\build\CPPLox.dir\Debug\Resolver.obj

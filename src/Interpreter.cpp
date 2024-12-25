@@ -4,6 +4,7 @@
 #include "../include/LoxCallable.hpp"
 #include "../include/LoxClass.hpp"
 #include "../include/LoxFunction.hpp"
+#include "../include/LoxInstance.hpp"
 #include "../include/LoxReturn.hpp"
 #include "../include/NativeFunctions.hpp"
 #include "../include/Util.hpp"
@@ -139,7 +140,8 @@ std::any Interpreter::visitCallExpr(std::shared_ptr<Call> expr) {
 
     // Check that callee is a callable
     std::shared_ptr<LoxCallable> function;
-    if (!(function = ptrAnyCast<NativeClock>(callee)) && !(function = ptrAnyCast<LoxFunction>(callee))) {
+    if (!(function = ptrAnyCast<NativeClock>(callee)) && !(function = ptrAnyCast<LoxFunction>(callee)) &&
+        !(function = ptrAnyCast<LoxClass>(callee))) {
         throw RuntimeError(expr->paren, "Can only call functions and classes.");
     }
 
@@ -282,6 +284,9 @@ std::string Interpreter::stringify(std::any obj) {
     }
     else if ((callable = ptrAnyCast<LoxFunction>(obj)) || (callable = ptrAnyCast<LoxClass>(obj))) {
         return callable->toString();
+    }
+    else if (std::shared_ptr<LoxInstance> inst = ptrAnyCast<LoxInstance>(obj)) {
+        return inst->toString();
     }
 
     return "Unrecognized type in Interpreter::stringify(): " + std::string(obj.type().name());

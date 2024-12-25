@@ -22,6 +22,9 @@
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\LoxFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\LoxInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\E\_VSCode_Projects\CPPLox\src\NativeFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

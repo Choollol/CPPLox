@@ -5,7 +5,7 @@
 
 #include "LoxCallable.hpp"
 
-class LoxClass : public LoxCallable {
+class LoxClass : public LoxCallable, public std::enable_shared_from_this<LoxClass> {
     public:
     LoxClass(const std::string& s) : name(s) {}
 
