@@ -67,11 +67,11 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
             else if (left.type() == typeid(std::string) && right.type() == typeid(std::string)) {
                 return std::any_cast<std::string>(left) + std::any_cast<std::string>(right);
             }
-            else if (left.type() == typeid(std::string) && right.type() == typeid(double)) {
-                return std::any_cast<std::string>(left) + std::to_string(std::any_cast<double>(right));
+            else if (left.type() == typeid(std::string)) {
+                return std::any_cast<std::string>(left) + stringify(right);
             }
-            else if (left.type() == typeid(double) && right.type() == typeid(std::string)) {
-                return std::to_string(std::any_cast<double>(left)) + std::any_cast<std::string>(right);
+            else if (right.type() == typeid(std::string)) {
+                return stringify(left) + std::any_cast<std::string>(right);
             }
             else {
                 throw RuntimeError(expr->oper, "Operands must be two numbers or strings. Got: " +

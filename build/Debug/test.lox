@@ -16,6 +16,8 @@ class Bacon {
   }
 }
 
-var b1 = Bacon(20);
-b1.printLen();
-b1.init(10).printLen();
+for (var i = 0; i < 10; i = i + 1) {
+  Bacon(i).printLen();
+}
+
+print "Null: " + nil;
