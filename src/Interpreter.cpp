@@ -24,25 +24,18 @@ void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> stmts) {
     }
 }
 
-std::any Interpreter::visitLiteralExpr(std::shared_ptr<Literal> expr) {
-    return expr->value;
-}
-std::any Interpreter::visitGroupingExpr(std::shared_ptr<Grouping> expr) {
-    return evaluate(expr->expression);
-}
-std::any Interpreter::visitUnaryExpr(std::shared_ptr<Unary> expr) {
-    std::any right = evaluate(expr->right);
+std::any Interpreter::visitAssignExpr(std::shared_ptr<Assign> expr) {
+    std::any value = evaluate(expr->value);
 
-    switch (expr->oper.type) {
-        case TokenType::MINUS:
-            checkNumberOperand(expr->oper, right);
-            return -std::any_cast<double>(right);
-        case TokenType::BANG:
-            return !isTruthy(right);
+    auto it = locals.find(expr);
+    if (it != locals.end()) {
+        environment->assignAt(it->second, expr->name, value);
+    }
+    else {
+        globals->assign(expr->name, value);
     }
 
-    // Unreachable
-    return nullptr;
+    return value;
 }
 std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
     std::any left = evaluate(expr->left);
@@ -104,32 +97,6 @@ std::any Interpreter::visitBinaryExpr(std::shared_ptr<Binary> expr) {
     // Unreachable
     return nullptr;
 }
-std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
-    return lookUpVariable(expr->name, expr);
-}
-std::any Interpreter::visitAssignExpr(std::shared_ptr<Assign> expr) {
-    std::any value = evaluate(expr->value);
-
-    auto it = locals.find(expr);
-    if (it != locals.end()) {
-        environment->assignAt(it->second, expr->name, value);
-    }
-    else {
-        globals->assign(expr->name, value);
-    }
-
-    return value;
-}
-std::any Interpreter::visitLogicalExpr(std::shared_ptr<Logical> expr) {
-    std::any left = evaluate(expr->left);
-
-    if ((expr->oper.type == TokenType::OR && isTruthy(left)) ||    // Logical OR short-circuit
-        (expr->oper.type == TokenType::AND && !isTruthy(left))) {  // Logical AND short-circuit
-        return left;
-    }
-
-    return evaluate(expr->right);
-}
 std::any Interpreter::visitCallExpr(std::shared_ptr<Call> expr) {
     std::any callee = evaluate(expr->callee);
 
@@ -152,6 +119,60 @@ std::any Interpreter::visitCallExpr(std::shared_ptr<Call> expr) {
 
     return function->call(*this, arguments);
 }
+std::any Interpreter::visitGetExpr(std::shared_ptr<Get> expr) {
+    std::any obj = evaluate(expr->object);
+    if (auto instance = ptrAnyCast<LoxInstance>(obj)) {
+        return instance->get(expr->name);
+    }
+
+    throw RuntimeError(expr->name, "Only instances have properties.");
+}
+std::any Interpreter::visitGroupingExpr(std::shared_ptr<Grouping> expr) {
+    return evaluate(expr->expression);
+}
+std::any Interpreter::visitLiteralExpr(std::shared_ptr<Literal> expr) {
+    return expr->value;
+}
+std::any Interpreter::visitLogicalExpr(std::shared_ptr<Logical> expr) {
+    std::any left = evaluate(expr->left);
+
+    if ((expr->oper.type == TokenType::OR && isTruthy(left)) ||    // Logical OR short-circuit
+        (expr->oper.type == TokenType::AND && !isTruthy(left))) {  // Logical AND short-circuit
+        return left;
+    }
+
+    return evaluate(expr->right);
+}
+std::any Interpreter::visitSetExpr(std::shared_ptr<Set> expr) {
+    std::any obj = evaluate(expr->object);
+
+    std::shared_ptr<LoxInstance> instance;
+    if (!(instance = ptrAnyCast<LoxInstance>(obj))) {
+        throw RuntimeError(expr->name, "Only instances have fields.");
+    }
+
+    std::any value = evaluate(expr->value);
+    instance->set(expr->name, value);
+    return value;
+}
+std::any Interpreter::visitUnaryExpr(std::shared_ptr<Unary> expr) {
+    std::any right = evaluate(expr->right);
+
+    switch (expr->oper.type) {
+        case TokenType::MINUS:
+            checkNumberOperand(expr->oper, right);
+            return -std::any_cast<double>(right);
+        case TokenType::BANG:
+            return !isTruthy(right);
+    }
+
+    // Unreachable
+    return nullptr;
+}
+std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
+    return lookUpVariable(expr->name, expr);
+}
+
 
 std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
     executeBlock(stmt->statements, std::make_shared<Environment>(environment));

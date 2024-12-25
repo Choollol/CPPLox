@@ -23,12 +23,21 @@ std::any Resolver::visitGroupingExpr(std::shared_ptr<Grouping> expr) {
     resolve(expr->expression);
     return nullptr;
 }
+std::any Resolver::visitGetExpr(std::shared_ptr<Get> expr) {
+    resolve(expr->object);
+    return nullptr;
+}
 std::any Resolver::visitLiteralExpr(std::shared_ptr<Literal> expr) {
     return nullptr;
 }
 std::any Resolver::visitLogicalExpr(std::shared_ptr<Logical> expr) {
     resolve(expr->left);
     resolve(expr->right);
+    return nullptr;
+}
+std::any Resolver::visitSetExpr(std::shared_ptr<Set> expr) {
+    resolve(expr->object);
+    resolve(expr->value);
     return nullptr;
 }
 std::any Resolver::visitUnaryExpr(std::shared_ptr<Unary> expr) {

@@ -9,8 +9,12 @@ class LoxInstance {
 
     std::string toString();
 
+    std::any get(const Token&);
+    void set(const Token&, const std::any&);
+
    private:
-    std::shared_ptr<LoxClass> loxClass;
+    const std::shared_ptr<LoxClass> loxClass;
+    std::map<std::string, std::any> fields;
 };
 
 #endif

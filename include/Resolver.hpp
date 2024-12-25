@@ -19,9 +19,11 @@ class Resolver : public ExprVisitor, public StmtVisitor {
     std::any visitAssignExpr(std::shared_ptr<Assign>) override;
     std::any visitBinaryExpr(std::shared_ptr<Binary>) override;
     std::any visitCallExpr(std::shared_ptr<Call>) override;
+    std::any visitGetExpr(std::shared_ptr<Get>) override;
     std::any visitGroupingExpr(std::shared_ptr<Grouping>) override;
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitLogicalExpr(std::shared_ptr<Logical>) override;
+    std::any visitSetExpr(std::shared_ptr<Set>) override;
     std::any visitUnaryExpr(std::shared_ptr<Unary>) override;
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;
 

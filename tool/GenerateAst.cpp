@@ -34,9 +34,11 @@ int main(int argc, char* argv[]) {
         "Assign   : Token name, Expr* value",
         "Binary   : Expr* left, Token oper, Expr* right",
         "Call     : Expr* callee, Token paren, vector<Expr*> arguments",
+        "Get      : Expr* object, Token name",
         "Grouping : Expr* expression",
         "Literal  : Object value",
         "Logical  : Expr* left, Token oper, Expr* right",
+        "Set      : Expr* object, Token name, Expr* value",
         "Unary    : Token oper, Expr* right",
         "Variable : Token name",
     };
