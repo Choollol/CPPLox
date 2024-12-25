@@ -18,3 +18,9 @@ std::any LoxFunction::call(Interpreter& interpreter, const std::vector<std::any>
 
     return nullptr;
 }
+
+std::any LoxFunction::bind(std::shared_ptr<LoxInstance> instance) {
+    auto environment = std::make_shared<Environment>(closure);
+    environment->define("this", instance);
+    return std::make_shared<LoxFunction>(declaration, environment);
+}

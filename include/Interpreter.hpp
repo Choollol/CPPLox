@@ -22,6 +22,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitLogicalExpr(std::shared_ptr<Logical>) override;
     std::any visitSetExpr(std::shared_ptr<Set>) override;
+    std::any visitThisExpr(std::shared_ptr<This>) override;
     std::any visitUnaryExpr(std::shared_ptr<Unary>) override;
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;
 
@@ -65,7 +66,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     void executeBlock(const std::vector<std::shared_ptr<Stmt>>&, std::shared_ptr<Environment>);
 
     /// @brief Get a variable's value by searching the enclosing environments.
-    std::any lookUpVariable(const Token&, std::shared_ptr<Variable>);
+    std::any lookUpVariable(const Token&, std::shared_ptr<Expr>);
 };
 
 #endif

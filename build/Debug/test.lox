@@ -2,6 +2,10 @@ class Bacon {
   eat() {
     print "Crunch crunch crunch!";
   }
+  eat2() {
+    this.eat();
+    this.eat();
+  }
 }
 
-Bacon().eat(); // Prints "Crunch crunch crunch!".
+Bacon().eat2();

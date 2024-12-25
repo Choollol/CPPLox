@@ -13,6 +13,10 @@ class Resolver : public ExprVisitor, public StmtVisitor {
         FUNCTION,
         METHOD
     };
+    enum class ClassType {
+        NONE,
+        CLASS
+    };
 
    public:
     Resolver(Interpreter& interp) : interpreter(interp) {}
@@ -25,6 +29,7 @@ class Resolver : public ExprVisitor, public StmtVisitor {
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitLogicalExpr(std::shared_ptr<Logical>) override;
     std::any visitSetExpr(std::shared_ptr<Set>) override;
+    std::any visitThisExpr(std::shared_ptr<This>) override;
     std::any visitUnaryExpr(std::shared_ptr<Unary>) override;
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;
 
@@ -44,7 +49,9 @@ class Resolver : public ExprVisitor, public StmtVisitor {
    private:
     Interpreter& interpreter;
     std::stack<std::map<std::string, bool>> scopes;
+
     FunctionType currentFunction = FunctionType::NONE;
+    ClassType currentClass = ClassType::NONE;
 
     /// @brief Begins a new scope. i.e. pushes a new scope onto the stack.
     void beginScope();

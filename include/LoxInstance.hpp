@@ -1,9 +1,16 @@
 #ifndef CPPLOX_INCLUDE_LOXINSTANCE_HPP
 #define CPPLOX_INCLUDE_LOXINSTANCE_HPP
 
-#include "LoxClass.hpp"
+#include <memory>
+#include <string>
+#include <any>
+#include <map>
 
-class LoxInstance {
+#include "Token.hpp"
+
+class LoxClass;
+
+class LoxInstance : public std::enable_shared_from_this<LoxInstance> {
    public:
     LoxInstance(std::shared_ptr<LoxClass> loxCl) : loxClass(loxCl) {}
 

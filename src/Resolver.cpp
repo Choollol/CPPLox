@@ -40,6 +40,15 @@ std::any Resolver::visitSetExpr(std::shared_ptr<Set> expr) {
     resolve(expr->value);
     return nullptr;
 }
+std::any Resolver::visitThisExpr(std::shared_ptr<This> expr) {
+    if (currentClass == ClassType::NONE) {
+        error(expr->keyword, "Can't use 'this' outside of a class.");
+        return nullptr;
+    }
+
+    resolveLocal(expr, expr->keyword);
+    return nullptr;
+}
 std::any Resolver::visitUnaryExpr(std::shared_ptr<Unary> expr) {
     resolve(expr->right);
     return nullptr;
@@ -60,13 +69,23 @@ std::any Resolver::visitBlockStmt(std::shared_ptr<Block> stmt) {
     return nullptr;
 }
 std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType::CLASS;
+
     declare(stmt->name);
     define(stmt->name);
+
+    beginScope();
+    scopes.top()["this"] = true;
 
     for (auto method : stmt->methods) {
         FunctionType declaration = FunctionType::METHOD;
         resolveFunction(method, declaration);
     }
+
+    endScope();
+
+    currentClass = enclosingClass;
 
     return nullptr;
 }

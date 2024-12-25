@@ -155,6 +155,9 @@ std::any Interpreter::visitSetExpr(std::shared_ptr<Set> expr) {
     instance->set(expr->name, value);
     return value;
 }
+std::any Interpreter::visitThisExpr(std::shared_ptr<This> expr) {
+    return lookUpVariable(expr->keyword, expr);
+}
 std::any Interpreter::visitUnaryExpr(std::shared_ptr<Unary> expr) {
     std::any right = evaluate(expr->right);
 
@@ -338,7 +341,7 @@ void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& stateme
 
     environment = previous;
 }
-std::any Interpreter::lookUpVariable(const Token& name, std::shared_ptr<Variable> expr) {
+std::any Interpreter::lookUpVariable(const Token& name, std::shared_ptr<Expr> expr) {
     auto it = locals.find(expr);
     if (it != locals.end()) {
         return environment->getAt(it->second, name.lexeme);

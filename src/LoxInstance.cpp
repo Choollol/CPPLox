@@ -1,4 +1,5 @@
 #include "../include/LoxInstance.hpp"
+#include "../include/LoxClass.hpp"
 
 #include "../include/Error.hpp"
 
@@ -7,7 +8,7 @@ std::any LoxInstance::get(const Token& name) {
         return fields[name.lexeme];
     }
     else if (auto method = loxClass->findMethod(name.lexeme)) {
-        return method;
+        return method->bind(shared_from_this());
     }
 
     throw RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
