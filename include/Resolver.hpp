@@ -10,7 +10,8 @@
 class Resolver : public ExprVisitor, public StmtVisitor {
     enum class FunctionType {
         NONE,
-        FUNCTION
+        FUNCTION,
+        METHOD
     };
 
    public:

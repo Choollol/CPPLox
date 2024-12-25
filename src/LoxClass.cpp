@@ -9,3 +9,11 @@ std::any LoxClass::call(Interpreter& interpreter, const std::vector<std::any>& a
 std::string LoxClass::toString() const {
     return name;
 }
+
+std::shared_ptr<LoxFunction> LoxClass::findMethod(const std::string& name) const {
+    if (methods.contains(name)) {
+        return methods.at(name);
+    }
+
+    return nullptr;
+}

@@ -62,6 +62,12 @@ std::any Resolver::visitBlockStmt(std::shared_ptr<Block> stmt) {
 std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
     declare(stmt->name);
     define(stmt->name);
+
+    for (auto method : stmt->methods) {
+        FunctionType declaration = FunctionType::METHOD;
+        resolveFunction(method, declaration);
+    }
+
     return nullptr;
 }
 std::any Resolver::visitExpressionStmt(std::shared_ptr<Expression> stmt) {

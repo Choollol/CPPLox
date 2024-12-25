@@ -6,6 +6,9 @@ std::any LoxInstance::get(const Token& name) {
     if (fields.contains(name.lexeme)) {
         return fields[name.lexeme];
     }
+    else if (auto method = loxClass->findMethod(name.lexeme)) {
+        return method;
+    }
 
     throw RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
 }
