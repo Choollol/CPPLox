@@ -6,17 +6,20 @@
 
 class LoxFunction : public LoxCallable {
    public:
-    LoxFunction(std::shared_ptr<Function> decl, std::shared_ptr<Environment> clos) : declaration(decl), closure(clos) {}
+    LoxFunction(std::shared_ptr<Function> decl, std::shared_ptr<Environment> clos, bool isInit)
+        : declaration(decl), closure(clos), isInitializer(isInit) {}
 
     size_t arity() override { return declaration->params.size(); }
     std::any call(Interpreter&, const std::vector<std::any>&) override;
     std::string toString() const override { return "<fn " + declaration->name.lexeme + ">"; }
 
-    std::any bind(std::shared_ptr<LoxInstance>);
+    /// @brief Binds this LoxFunction as a method of the given LoxInstance.
+    std::shared_ptr<LoxFunction> bind(std::shared_ptr<LoxInstance>);
 
    private:
     const std::shared_ptr<Function> declaration;
     const std::shared_ptr<Environment> closure;
+    const bool isInitializer;
 };
 
 #endif

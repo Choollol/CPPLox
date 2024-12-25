@@ -181,23 +181,25 @@ std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
     executeBlock(stmt->statements, std::make_shared<Environment>(environment));
     return nullptr;
 }
+std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
+    environment->define(stmt->name.lexeme, nullptr);
+
+    std::map<std::string, std::shared_ptr<LoxFunction>> methods;
+    for (auto method : stmt->methods) {
+        methods[method->name.lexeme] = std::make_shared<LoxFunction>(method, environment, method->name.lexeme == "init");
+    }
+
+    auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme, std::move(methods));
+    environment->assign(stmt->name, loxClass);
+    return nullptr;
+}
 std::any Interpreter::visitExpressionStmt(std::shared_ptr<Expression> stmt) {
     evaluate(stmt->expression);
     return nullptr;
 }
-std::any Interpreter::visitPrintStmt(std::shared_ptr<Print> stmt) {
-    std::any obj = evaluate(stmt->expression);
-    std::cout << stringify(obj) << std::endl;
-    return nullptr;
-}
-
-std::any Interpreter::visitVarStmt(std::shared_ptr<Var> stmt) {
-    std::any value = nullptr;
-    if (stmt->initializer != nullptr) {
-        value = evaluate(stmt->initializer);
-    }
-
-    environment->define(stmt->name.lexeme, value);
+std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
+    auto function = std::make_shared<LoxFunction>(stmt, environment, false);
+    environment->define(stmt->name.lexeme, function);
     return nullptr;
 }
 std::any Interpreter::visitIfStmt(std::shared_ptr<If> stmt) {
@@ -210,6 +212,28 @@ std::any Interpreter::visitIfStmt(std::shared_ptr<If> stmt) {
 
     return nullptr;
 }
+std::any Interpreter::visitPrintStmt(std::shared_ptr<Print> stmt) {
+    std::any obj = evaluate(stmt->expression);
+    std::cout << stringify(obj) << std::endl;
+    return nullptr;
+}
+std::any Interpreter::visitReturnStmt(std::shared_ptr<Return> stmt) {
+    std::any value = nullptr;
+    if (stmt->value != nullptr) {
+        value = evaluate(stmt->value);
+    }
+
+    throw LoxReturn{value};
+}
+std::any Interpreter::visitVarStmt(std::shared_ptr<Var> stmt) {
+    std::any value = nullptr;
+    if (stmt->initializer != nullptr) {
+        value = evaluate(stmt->initializer);
+    }
+
+    environment->define(stmt->name.lexeme, value);
+    return nullptr;
+}
 std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
     while (isTruthy(evaluate(stmt->condition))) {
         execute(stmt->body);
@@ -217,31 +241,8 @@ std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
 
     return nullptr;
 }
-std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
-    auto function = std::make_shared<LoxFunction>(stmt, environment);
-    environment->define(stmt->name.lexeme, function);
-    return nullptr;
-}
-std::any Interpreter::visitReturnStmt(std::shared_ptr<Return> stmt) {
-    std::any value = nullptr;
-    if (stmt != nullptr) {
-        value = evaluate(stmt->value);
-    }
 
-    throw LoxReturn{value};
-}
-std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
-    environment->define(stmt->name.lexeme, nullptr);
 
-    std::map<std::string, std::shared_ptr<LoxFunction>> methods;
-    for (auto method : stmt->methods) {
-        methods[method->name.lexeme] = std::make_shared<LoxFunction>(method, environment);
-    }
-
-    auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme, std::move(methods));
-    environment->assign(stmt->name, loxClass);
-    return nullptr;
-}
 
 void Interpreter::resolve(std::shared_ptr<Expr> expr, size_t depth) {
     locals[expr] = depth;
@@ -327,6 +328,7 @@ void Interpreter::execute(std::shared_ptr<Stmt> stmt) {
 }
 void Interpreter::executeBlock(const std::vector<std::shared_ptr<Stmt>>& statements, std::shared_ptr<Environment> env) {
     auto previous = environment;
+
     try {
         environment = env;
 

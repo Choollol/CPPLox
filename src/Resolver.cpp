@@ -80,6 +80,9 @@ std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
 
     for (auto method : stmt->methods) {
         FunctionType declaration = FunctionType::METHOD;
+        if (method->name.lexeme == "init") {
+            declaration = FunctionType::INITIALIZER;
+        }
         resolveFunction(method, declaration);
     }
 
@@ -116,7 +119,11 @@ std::any Resolver::visitReturnStmt(std::shared_ptr<Return> stmt) {
     if (currentFunction == FunctionType::NONE) {
         error(stmt->keyword, "Can't return from top-level code.");
     }
+
     if (stmt->value != nullptr) {
+        if (currentFunction == FunctionType::INITIALIZER) {
+            error(stmt->keyword, "Can't return a value from an initializer.");
+        }
         resolve(stmt->value);
     }
     return nullptr;

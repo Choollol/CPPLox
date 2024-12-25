@@ -1,4 +1,9 @@
 class Bacon {
+  init(len) {
+    this.length = len;
+    return;
+    print this;
+  }
   eat() {
     print "Crunch crunch crunch!";
   }
@@ -6,6 +11,11 @@ class Bacon {
     this.eat();
     this.eat();
   }
+  printLen() {
+    print "Length: " + this.length;
+  }
 }
 
-Bacon().eat2();
+var b1 = Bacon(20);
+b1.printLen();
+b1.init(10).printLen();
