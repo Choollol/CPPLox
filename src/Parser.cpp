@@ -21,6 +21,9 @@ std::shared_ptr<Stmt> Parser::declaration() {
         else if (match(TokenType::FUN)) {
             return functionDeclaration("function");
         }
+        else if (match(TokenType::CLASS)) {
+            return classDeclaration();
+        }
         return statement();
     }
     catch (ParseError& error) {
@@ -198,6 +201,19 @@ std::shared_ptr<Function> Parser::functionDeclaration(const std::string& type) {
     consume(TokenType::LEFT_BRACE, "Expect '{' before " + type + " body.");
     std::vector<std::shared_ptr<Stmt>> body = block();
     return std::make_shared<Function>(name, parameters, body);
+}
+std::shared_ptr<Class> Parser::classDeclaration() {
+    Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
+    consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+    std::vector<std::shared_ptr<Function>> methods;
+    while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+        methods.push_back(functionDeclaration("method"));
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
+
+    return std::make_shared<Class>(name, methods);
 }
 
 std::shared_ptr<Expr> Parser::expression() {

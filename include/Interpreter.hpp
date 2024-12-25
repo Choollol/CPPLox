@@ -24,6 +24,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;
 
     std::any visitBlockStmt(std::shared_ptr<Block>) override;
+    std::any visitClassStmt(std::shared_ptr<Class>) override;
     std::any visitExpressionStmt(std::shared_ptr<Expression>) override;
     std::any visitFunctionStmt(std::shared_ptr<Function>) override;
     std::any visitIfStmt(std::shared_ptr<If>) override;
@@ -54,7 +55,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     /// @brief Checks if the given std::any's hold numbers. If either doesn't, throw an error with the given token.
     void checkNumberOperands(const Token&, const std::any&, const std::any&);
     /// @brief Returns a std::string representation of the given std::any
-    std::string stringify(const std::any&);
+    std::string stringify(std::any);
 
     /// @brief Executes a statement.
     void execute(std::shared_ptr<Stmt>);

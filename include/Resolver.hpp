@@ -26,6 +26,7 @@ class Resolver : public ExprVisitor, public StmtVisitor {
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;
 
     std::any visitBlockStmt(std::shared_ptr<Block>) override;
+    std::any visitClassStmt(std::shared_ptr<Class>) override;
     std::any visitExpressionStmt(std::shared_ptr<Expression>) override;
     std::any visitFunctionStmt(std::shared_ptr<Function>) override;
     std::any visitIfStmt(std::shared_ptr<If>) override;

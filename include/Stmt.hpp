@@ -9,6 +9,7 @@
 #include "Expr.hpp"
 
 class Block;
+class Class;
 class Expression;
 class Function;
 class If;
@@ -19,6 +20,7 @@ class While;
 
 struct StmtVisitor {
     virtual std::any visitBlockStmt(std::shared_ptr<Block> stmt) = 0;
+    virtual std::any visitClassStmt(std::shared_ptr<Class> stmt) = 0;
     virtual std::any visitExpressionStmt(std::shared_ptr<Expression> stmt) = 0;
     virtual std::any visitFunctionStmt(std::shared_ptr<Function> stmt) = 0;
     virtual std::any visitIfStmt(std::shared_ptr<If> stmt) = 0;
@@ -43,6 +45,18 @@ class Block : public Stmt, public std::enable_shared_from_this<Block> {
     }
 
     const std::vector<std::shared_ptr<Stmt>> statements;
+};
+
+class Class : public Stmt, public std::enable_shared_from_this<Class> {
+   public:
+    Class(const Token& name, const std::vector<std::shared_ptr<Function>>& methods) : name(name), methods(methods) {}
+
+    std::any accept(StmtVisitor& visitor) override {
+        return visitor.visitClassStmt(shared_from_this());
+    }
+
+    const Token name;
+    const std::vector<std::shared_ptr<Function>> methods;
 };
 
 class Expression : public Stmt, public std::enable_shared_from_this<Expression> {

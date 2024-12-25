@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
     // Generate statement code
     std::vector<std::string_view> stmtTypes{
         "Block      : vector<Stmt*> statements",
+        "Class      : Token name, vector<Function*> methods",
         "Expression : Expr* expression",
         "Function   : Token name, vector<Token> params, vector<Stmt*> body",
         "If         : Expr* condition, Stmt* thenBranch, Stmt* elseBranch",

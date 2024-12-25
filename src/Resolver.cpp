@@ -50,6 +50,11 @@ std::any Resolver::visitBlockStmt(std::shared_ptr<Block> stmt) {
     endScope();
     return nullptr;
 }
+std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
+    declare(stmt->name);
+    define(stmt->name);
+    return nullptr;
+}
 std::any Resolver::visitExpressionStmt(std::shared_ptr<Expression> stmt) {
     resolve(stmt->expression);
     return nullptr;

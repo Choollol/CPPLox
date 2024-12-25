@@ -135,6 +135,9 @@ class Parser {
 
     /// @brief Handle function or method declaration.
     std::shared_ptr<Function> functionDeclaration(const std::string&);
+
+    /// @brief Handle class declaration.
+    std::shared_ptr<Class> classDeclaration();
 };
 
 #endif

@@ -2,6 +2,7 @@
 
 #include "../include/Error.hpp"
 #include "../include/LoxCallable.hpp"
+#include "../include/LoxClass.hpp"
 #include "../include/LoxFunction.hpp"
 #include "../include/LoxReturn.hpp"
 #include "../include/NativeFunctions.hpp"
@@ -191,7 +192,7 @@ std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
     return nullptr;
 }
 std::any Interpreter::visitFunctionStmt(std::shared_ptr<Function> stmt) {
-    std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(stmt, environment);
+    auto function = std::make_shared<LoxFunction>(stmt, environment);
     environment->define(stmt->name.lexeme, function);
     return nullptr;
 }
@@ -202,6 +203,12 @@ std::any Interpreter::visitReturnStmt(std::shared_ptr<Return> stmt) {
     }
 
     throw LoxReturn{value};
+}
+std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
+    environment->define(stmt->name.lexeme, nullptr);
+    auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme);
+    environment->assign(stmt->name, loxClass);
+    return nullptr;
 }
 
 void Interpreter::resolve(std::shared_ptr<Expr> expr, size_t depth) {
@@ -254,7 +261,9 @@ void Interpreter::checkNumberOperands(const Token& op, const std::any& left, con
     checkNumberOperand(op, right);
 }
 
-std::string Interpreter::stringify(const std::any& obj) {
+std::string Interpreter::stringify(std::any obj) {
+    std::shared_ptr<LoxCallable> callable;
+
     if (obj.type() == typeid(nullptr)) {
         return "nil";
     }
@@ -270,6 +279,9 @@ std::string Interpreter::stringify(const std::any& obj) {
     }
     else if (obj.type() == typeid(std::string)) {
         return std::any_cast<std::string>(obj);
+    }
+    else if ((callable = ptrAnyCast<LoxFunction>(obj)) || (callable = ptrAnyCast<LoxClass>(obj))) {
+        return callable->toString();
     }
 
     return "Unrecognized type in Interpreter::stringify(): " + std::string(obj.type().name());
