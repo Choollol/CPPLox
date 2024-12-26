@@ -155,6 +155,17 @@ std::any Interpreter::visitSetExpr(std::shared_ptr<Set> expr) {
     instance->set(expr->name, value);
     return value;
 }
+std::any Interpreter::visitSuperExpr(std::shared_ptr<Super> expr) {
+    size_t distance = locals[expr];
+    auto superclass = ptrAnyCast<LoxClass>(environment->getAt(distance, "super"));
+    auto object = ptrAnyCast<LoxInstance>(environment->getAt(distance - 1, "this"));
+
+    auto method = superclass->findMethod(expr->method.lexeme);
+    if (method == nullptr) {
+        throw RuntimeError(expr->method, "Undefined property '" + expr->method.lexeme + "'.");
+    }
+    return method->bind(object);
+}
 std::any Interpreter::visitThisExpr(std::shared_ptr<This> expr) {
     return lookUpVariable(expr->keyword, expr);
 }
@@ -190,6 +201,9 @@ std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
         if (!(superclass = ptrAnyCast<LoxClass>(superclassVal))) {
             error(stmt->superclass->name, "Superclass must be a class.");
         }
+
+        environment = std::make_shared<Environment>(environment);
+        environment->define("super", superclassVal);
     }
 
     std::map<std::string, std::shared_ptr<LoxFunction>> methods;
@@ -198,6 +212,11 @@ std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
     }
 
     auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme, superclass, std::move(methods));
+
+    if (stmt->superclass != nullptr) {
+        environment = environment->enclosing;
+    }
+
     environment->assign(stmt->name, loxClass);
     return nullptr;
 }

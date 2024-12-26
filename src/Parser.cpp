@@ -261,7 +261,6 @@ std::shared_ptr<Expr> Parser::comparison() {
 }
 std::shared_ptr<Expr> Parser::term() {
     return binaryExpression(&Parser::factor, TokenType::PLUS, TokenType::MINUS);
-    return binaryExpression(&Parser::factor, TokenType::PLUS, TokenType::MINUS);
 }
 std::shared_ptr<Expr> Parser::factor() {
     return binaryExpression(&Parser::unary, TokenType::SLASH, TokenType::STAR);
@@ -317,6 +316,14 @@ std::shared_ptr<Expr> Parser::primary() {
     if (match(TokenType::IDENTIFIER)) {
         return std::make_shared<Variable>(previous());
     }
+    
+    if (match(TokenType::SUPER)) {
+        Token keyword = previous();
+        consume(TokenType::DOT, "Expect '.' after 'super'.");
+        Token method = consume(TokenType::IDENTIFIER, "Expect superclass method name.");
+        return std::make_shared<Super>(keyword, method);
+    }
+    
 
     // Parenthesized expression
     if (match(TokenType::LEFT_PAREN)) {

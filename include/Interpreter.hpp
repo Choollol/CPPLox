@@ -22,6 +22,7 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
     std::any visitLiteralExpr(std::shared_ptr<Literal>) override;
     std::any visitLogicalExpr(std::shared_ptr<Logical>) override;
     std::any visitSetExpr(std::shared_ptr<Set>) override;
+    std::any visitSuperExpr(std::shared_ptr<Super>) override;
     std::any visitThisExpr(std::shared_ptr<This>) override;
     std::any visitUnaryExpr(std::shared_ptr<Unary>) override;
     std::any visitVariableExpr(std::shared_ptr<Variable>) override;

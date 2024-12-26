@@ -10,6 +10,8 @@
 #include "Token.hpp"
 
 class Environment : public std::enable_shared_from_this<Environment> {
+    friend class Interpreter;
+
    public:
     Environment() : enclosing(nullptr) {}
     Environment(std::shared_ptr<Environment> env) : enclosing(env) {}

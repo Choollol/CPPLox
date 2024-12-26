@@ -40,6 +40,10 @@ std::any Resolver::visitSetExpr(std::shared_ptr<Set> expr) {
     resolve(expr->value);
     return nullptr;
 }
+std::any Resolver::visitSuperExpr(std::shared_ptr<Super> expr) {
+    resolveLocal(expr, expr->keyword);
+    return nullptr;
+}
 std::any Resolver::visitThisExpr(std::shared_ptr<This> expr) {
     if (currentClass == ClassType::NONE) {
         error(expr->keyword, "Can't use 'this' outside of a class.");
@@ -81,6 +85,10 @@ std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
         }
 
         resolve(stmt->superclass);
+
+        beginScope();
+        scopes.top()["super"] = true;
+        currentClass = ClassType::SUBCLASS;
     }
 
     beginScope();
@@ -95,6 +103,10 @@ std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
     }
 
     endScope();
+
+    if (stmt->superclass != nullptr) {
+        endScope();
+    }
 
     currentClass = enclosingClass;
 
