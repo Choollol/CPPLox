@@ -176,7 +176,6 @@ std::any Interpreter::visitVariableExpr(std::shared_ptr<Variable> expr) {
     return lookUpVariable(expr->name, expr);
 }
 
-
 std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
     executeBlock(stmt->statements, std::make_shared<Environment>(environment));
     return nullptr;
@@ -184,12 +183,21 @@ std::any Interpreter::visitBlockStmt(std::shared_ptr<Block> stmt) {
 std::any Interpreter::visitClassStmt(std::shared_ptr<Class> stmt) {
     environment->define(stmt->name.lexeme, nullptr);
 
+    std::any superclassVal = nullptr;
+    std::shared_ptr<LoxClass> superclass;
+    if (stmt->superclass != nullptr) {
+        superclassVal = evaluate(stmt->superclass);
+        if (!(superclass = ptrAnyCast<LoxClass>(superclassVal))) {
+            error(stmt->superclass->name, "Superclass must be a class.");
+        }
+    }
+
     std::map<std::string, std::shared_ptr<LoxFunction>> methods;
     for (auto method : stmt->methods) {
         methods[method->name.lexeme] = std::make_shared<LoxFunction>(method, environment, method->name.lexeme == "init");
     }
 
-    auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme, std::move(methods));
+    auto loxClass = std::make_shared<LoxClass>(stmt->name.lexeme, superclass, std::move(methods));
     environment->assign(stmt->name, loxClass);
     return nullptr;
 }
@@ -241,8 +249,6 @@ std::any Interpreter::visitWhileStmt(std::shared_ptr<While> stmt) {
 
     return nullptr;
 }
-
-
 
 void Interpreter::resolve(std::shared_ptr<Expr> expr, size_t depth) {
     locals[expr] = depth;

@@ -75,6 +75,14 @@ std::any Resolver::visitClassStmt(std::shared_ptr<Class> stmt) {
     declare(stmt->name);
     define(stmt->name);
 
+    if (stmt->superclass != nullptr) {
+        if (stmt->name.lexeme == stmt->superclass->name.lexeme) {
+            error(stmt->superclass->name, "A class can't inherit from itself.");
+        }
+
+        resolve(stmt->superclass);
+    }
+
     beginScope();
     scopes.top()["this"] = true;
 

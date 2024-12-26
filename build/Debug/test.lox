@@ -1,4 +1,8 @@
-class Bacon {
+class Food {
+
+}
+
+class Bacon < Food {
   init(len) {
     this.length = len;
     return;
