@@ -1,27 +1,9 @@
-class Food {
-
-}
-
-class Bacon < Food {
-  init(len) {
-    this.length = len;
-    return;
-    print this;
-  }
-  eat() {
-    print "Crunch crunch crunch!";
-  }
-  eat2() {
-    this.eat();
-    this.eat();
-  }
-  printLen() {
-    print "Length: " + this.length;
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
   }
 }
 
-for (var i = 0; i < 10; i = i + 1) {
-  Bacon(i).printLen();
-}
+class BostonCream < Doughnut {}
 
-print "Null: " + nil;
+BostonCream().cook();
